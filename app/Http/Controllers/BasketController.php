@@ -27,20 +27,8 @@ class BasketController extends Controller
     /**
      * Форма оформления заказа
      */
-    public function checkout(Request $request) {
-        $profile = null;
-        $profiles = null;
-        if (auth()->check()) { // если пользователь аутентифицирован
-            $user = auth()->user();
-            // ...и у него есть профили для оформления
-            $profiles = $user->profiles;
-            // ...и был запрошен профиль для оформления
-            $prof_id = (int)$request->input('profile_id');
-            if ($prof_id) {
-                $profile = $user->profiles()->whereIdAndUserId($prof_id, $user->id)->first();
-            }
-        }
-        return view('basket.checkout', compact('profiles', 'profile'));
+    public function checkout() {
+        return view('basket.checkout');
     }
 
     /**
@@ -137,30 +125,6 @@ class BasketController extends Controller
             // ему здесь делать нечего — отправляем на страницу корзины
             return redirect()->route('basket.index');
         }
-    }
-
-    /**
-     * Возвращает профиль пользователя в формате JSON
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function profile(Request $request) {
-        if ( ! $request->ajax()) {
-            abort(404);
-        }
-        if ( ! auth()->check()) {
-            return response()->json(['error' => 'Нужна авторизация!'], 404);
-        }
-        $user = auth()->user();
-        $profile_id = (int)$request->input('profile_id');
-        if ($profile_id) {
-            $profile = $user->profiles()->whereIdAndUserId($profile_id, $user->id)->first();
-            if ($profile) {
-                return response()->json(['profile' => $profile]);
-            }
-        }
-        return response()->json(['error' => 'Профиль не найден!'], 404);
     }
 
 }

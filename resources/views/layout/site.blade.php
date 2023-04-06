@@ -15,33 +15,38 @@
         <!-- Бренд и кнопка «Гамбургер» -->
         <a class="navbar-brand" href="{{ route('index') }}">Магазин</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbar-example" aria-controls="navbar-example"
+                data-target="#navbar-example" aria-controls="navbar-larashop"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Основная часть меню (может содержать ссылки, формы и прочее) -->
-        <div class="collapse navbar-collapse" id="navbar-example">
+        <div class="collapse navbar-collapse" id="navbar-larashop">
             <!-- Этот блок расположен слева -->
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('catalog.index') }}">Каталог</a>
                 </li>
-                @include('layout.part.pages')
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Доставка</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Контакты</a>
+                </li>
             </ul>
 
             <!-- Этот блок расположен посередине -->
-            <form action="{{ route('catalog.search') }}" class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" name="query"
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search"
                        placeholder="Поиск по каталогу" aria-label="Search">
-                <button class="btn btn-outline-light my-2 my-sm-0"
-                        type="submit">Поиск</button>
+                <button class="btn btn-outline-info my-2 my-sm-0"
+                        type="submit">Искать
+                </button>
             </form>
 
             <!-- Этот блок расположен справа -->
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item" id="top-basket">
-                    <a class="nav-link @if ($positions) text-success @endif"
-                       href="{{ route('basket.index') }}">
+                <li class="nav-item">
+                    <a class="nav-link @if ($positions) text-success @endif" href="{{ route('basket.index') }}">
                         Корзина
                         @if ($positions) ({{ $positions }}) @endif
                     </a>
@@ -80,7 +85,7 @@
             @endif
 
             @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible mt-4" role="alert">
+                <div class="alert alert-danger alert-dismissible mt-0" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -94,6 +99,7 @@
 
             @yield('content')
         </div>
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
@@ -104,6 +110,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </body>
 </html>
