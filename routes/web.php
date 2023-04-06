@@ -66,6 +66,7 @@ Route::namespace('App\Http\Controllers\Admin')->name('admin.')->prefix('admin')-
     Route::get('index', 'IndexController')->name('index');
 });
 
+
 Route::group([
     'as' => 'admin.', // имя маршрута, например admin.index
     'prefix' => 'admin', // префикс маршрута, например admin/index
@@ -76,6 +77,80 @@ Route::group([
     Route::get('index', 'App\Http\Controllers\Admin\IndexController')->name('index');
     // CRUD-операции над категориями каталога
     Route::resource('category', 'App\Http\Controllers\Admin\CategoryController');
+    // CRUD-операции над брендами каталога
+    Route::resource('brand', 'App\Http\Controllers\Admin\BrandController');
+    // CRUD-операции над товарами каталога
+    Route::resource('product', 'App\Http\Controllers\Admin\ProductController');
+    // доп.маршрут для просмотра товаров категории
+    Route::get('product/category/{category}', 'App\Http\Controllers\Admin\ProductController@category')
+        ->name('product.category');
+    // просмотр и редактирование заказов
+    Route::resource('order', 'App\Http\Controllers\Admin\OrderController', ['except' => [
+        'create', 'store', 'destroy'
+    ]]);
+    // просмотр и редактирование пользователей
+    Route::resource('user', 'App\Http\Controllers\Admin\UserController', ['except' => [
+        'create', 'store', 'show', 'destroy'
+    ]]);
+    // CRUD-операции над страницами сайта
+    Route::resource('page', 'App\Http\Controllers\Admin\PageController');
+
+
+
 });
 
+Route::get('/page/{page:slug}', 'App\Http\Controllers\PageController')->name('page.show');
+
+Route::name('user.')->prefix('user')->group(function () {
+    // регистрация, вход в ЛК, восстановление пароля
+    Auth::routes();
+});
+
+Route::group([
+    'as' => 'user.', // имя маршрута, например user.index
+    'prefix' => 'user', // префикс маршрута, например user/index
+    'middleware' => ['auth'] // один или несколько посредников
+], function () {
+    // главная страница личного кабинета пользователя
+    Route::get('index', 'App\Http\Controllers\UserController@index')->name('index');
+    // CRUD-операции над профилями пользователя
+    Route::resource('profile', 'App\Http\Controllers\ProfileController');
+    // просмотр списка заказов в личном кабинете
+    Route::get('order', 'App\Http\Controllers\OrderController@index')->name('order.index');
+    // просмотр отдельного заказа в личном кабинете
+    Route::get('order/{order}', 'App\Http\Controllers\OrderController@show')->name('order.show');
+    // страница результатов поиска
+    Route::get('search', 'App\Http\Controllers\CatalogController@search')
+        ->name('search');
+});
+
+/*
+ * Каталог товаров: категория, бренд и товар
+ */
+Route::group([
+    'as' => 'catalog.', // имя маршрута, например catalog.index
+    'prefix' => 'catalog', // префикс маршрута, например catalog/index
+], function () {
+    // главная страница каталога
+    Route::get('index', 'App\Http\Controllers\CatalogController@index')
+        ->name('index');
+    // категория каталога товаров
+    Route::get('category/{category:slug}', 'App\Http\Controllers\CatalogController@category')
+        ->name('category');
+    // бренд каталога товаров
+    Route::get('brand/{brand:slug}', 'App\Http\Controllers\CatalogController@brand')
+        ->name('brand');
+    // страница товара каталога
+    Route::get('product/{product:slug}', 'App\Http\Controllers\CatalogController@product')
+        ->name('product');
+    // страница результатов поиска
+    Route::get('search', 'App\Http\Controllers\CatalogController@search')
+        ->name('search');
+});
+
+Route::post('/basket/profile', 'App\Http\Controllers\BasketController@profile')
+    ->name('basket.profile');
+
 Storage::disk('local')->put('data/file.txt', 'Some file content');
+
+
