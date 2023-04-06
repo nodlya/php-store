@@ -2,25 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Providers\RouteServiceProvider;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    use AuthenticatesUsers;
+
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = RouteServiceProvider::HOME;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct() {
-        $this->middleware('auth');
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Сразу после входа выполняем редирект и устанавливаем flash-сообщение
      */
-    public function index() {
-        return view('user.index');
+    protected function authenticated(Request $request, $user) {
+        $route = 'user.index';
+        $message = 'Вы успешно вошли в личный кабинет';
+        if ($user->admin) {
+            $route = 'admin.index';
+            $message = 'Вы успешно вошли в панель управления';
+        }
+        return redirect()->route($route)
+            ->with('success', $message);
+    }
+
+    /**
+     * Сразу после выхода выполняем редирект и устанавливаем flash-сообщение
+     */
+    protected function loggedOut(Request $request) {
+        return redirect()->route('user.login')
+            ->with('success', 'Вы успешно вышли из личного кабинета');
     }
 }
